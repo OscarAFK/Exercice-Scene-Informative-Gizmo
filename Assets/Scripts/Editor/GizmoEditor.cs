@@ -19,44 +19,58 @@ namespace technical.test.editor
         private void OnGUI()
         {
             GUILayout.Label("Gizmo Editor", EditorStyles.boldLabel);
-            GUILayout.BeginHorizontal();
 
-            GUILayout.BeginVertical();
-            GUILayout.Label("Text");
-            foreach (var g in data.Gizmos)
+            if (data)
             {
-                GUILayout.TextField(g.Name, GUILayout.MinWidth(200));
-            }
-            GUILayout.EndVertical();
+                GUILayout.BeginHorizontal();
 
-
-            GUILayout.BeginVertical();
-            GUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            GUILayout.Label("Position");
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-
-            foreach (var g in data.Gizmos)
-            {
-                EditorGUILayout.Vector3Field("",g.Position);
-            }
-            GUILayout.EndVertical();
-
-            GUILayout.BeginVertical();
-            GUILayout.Label("");
-
-            foreach (var g in data.Gizmos)
-            {
-                if (GUILayout.Button("Edit", GUILayout.MinWidth(75)))
+                GUILayout.BeginVertical();
+                GUILayout.Label("Text");
+                foreach (var g in data.Gizmos)
                 {
-                    Debug.Log("Edit");
+                    GUILayout.TextField(g.Name, GUILayout.MinWidth(200));
                 }
+                GUILayout.EndVertical();
+
+
+                GUILayout.BeginVertical();
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Position");
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+
+                foreach (var g in data.Gizmos)
+                {
+                    EditorGUILayout.Vector3Field("", g.Position);
+                }
+                GUILayout.EndVertical();
+
+                GUILayout.BeginVertical();
+                GUILayout.Label("");
+
+                foreach (var g in data.Gizmos)
+                {
+                    if (GUILayout.Button("Edit", GUILayout.MinWidth(75)))
+                    {
+                        Debug.Log("Edit");
+                    }
+                }
+                GUILayout.EndVertical();
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Choose another Scene Gizmo Asset"))
+                {
+                    data = null;
+                }
+
             }
-            GUILayout.EndVertical();
-
-            GUILayout.EndHorizontal();
-
+            else
+            {
+                data = EditorGUILayout.ObjectField("Scene Gizmo Asset: ", data, typeof(SceneGizmoAsset), true) as SceneGizmoAsset;
+            }
         }
 
         // Window has been selected
@@ -77,16 +91,19 @@ namespace technical.test.editor
 
         void OnSceneGUI(SceneView sceneView)
         {
-            Handles.color = Color.white;
-            GUI.color = Color.black;
-            foreach (var g in data.Gizmos)
+            if (data)
             {
                 Handles.color = Color.white;
-                Handles.SphereHandleCap(0, g.Position, Quaternion.identity, 0.5f, EventType.Repaint);
-                Handles.color = Color.black;
-                Handles.DrawLine(g.Position, g.Position + Vector3.up);
-                Handles.Label(g.Position + Vector3.up * 1.25f, g.Name, EditorStyles.boldLabel);
-            }   
+                GUI.color = Color.black;
+                foreach (var g in data.Gizmos)
+                {
+                    Handles.color = Color.white;
+                    Handles.SphereHandleCap(0, g.Position, Quaternion.identity, 0.5f, EventType.Repaint);
+                    Handles.color = Color.black;
+                    Handles.DrawLine(g.Position, g.Position + Vector3.up);
+                    Handles.Label(g.Position + Vector3.up * 1.25f, g.Name, EditorStyles.boldLabel);
+                }
+            }
         }
 
     }
