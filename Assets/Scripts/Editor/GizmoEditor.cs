@@ -56,6 +56,37 @@ namespace technical.test.editor
             GUILayout.EndVertical();
 
             GUILayout.EndHorizontal();
+
+        }
+
+        // Window has been selected
+        void OnFocus()
+        {
+            SceneView.duringSceneGui += this.OnSceneGUI;
+        }
+
+        private void OnLostFocus()
+        {
+            SceneView.duringSceneGui -= this.OnSceneGUI;
+        }
+
+        void OnDestroy()
+        {
+            SceneView.duringSceneGui -= this.OnSceneGUI;
+        }
+
+        void OnSceneGUI(SceneView sceneView)
+        {
+            Handles.color = Color.white;
+            GUI.color = Color.black;
+            foreach (var g in data.Gizmos)
+            {
+                Handles.color = Color.white;
+                Handles.SphereHandleCap(0, g.Position, Quaternion.identity, 0.5f, EventType.Repaint);
+                Handles.color = Color.black;
+                Handles.DrawLine(g.Position, g.Position + Vector3.up);
+                Handles.Label(g.Position + Vector3.up * 1.25f, g.Name, EditorStyles.boldLabel);
+            }   
         }
 
     }
