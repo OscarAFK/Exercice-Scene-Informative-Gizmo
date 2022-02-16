@@ -26,9 +26,9 @@ namespace technical.test.editor
 
                 GUILayout.BeginVertical();
                 GUILayout.Label("Text");
-                foreach (var g in data.Gizmos)
+                for(int i = 0; i<data.Gizmos.Length; i++)
                 {
-                    GUILayout.TextField(g.Name, GUILayout.MinWidth(200));
+                    data.Gizmos[i].Name = EditorGUILayout.TextField(data.Gizmos[i].Name, GUILayout.MinWidth(200));
                 }
                 GUILayout.EndVertical();
 
@@ -39,21 +39,20 @@ namespace technical.test.editor
                 GUILayout.Label("Position");
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-
-                foreach (var g in data.Gizmos)
+                for (int i = 0; i < data.Gizmos.Length; i++)
                 {
-                    EditorGUILayout.Vector3Field("", g.Position);
+                    data.Gizmos[i].Position = EditorGUILayout.Vector3Field("", data.Gizmos[i].Position);
                 }
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical();
                 GUILayout.Label("");
 
-                foreach (var g in data.Gizmos)
+                for (int i = 0; i < data.Gizmos.Length; i++)
                 {
                     if (GUILayout.Button("Edit", GUILayout.MinWidth(75)))
                     {
-                        Debug.Log("Edit");
+                        
                     }
                 }
                 GUILayout.EndVertical();
