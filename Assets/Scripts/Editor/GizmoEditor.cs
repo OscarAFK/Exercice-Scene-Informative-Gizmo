@@ -9,6 +9,7 @@ namespace technical.test.editor
     {
 
         public static SceneGizmoAsset data;
+        public static int indexEdit = -1;
 
         [MenuItem("Window/Custom/Show Gizmos")]
         public static void ShowWindow()
@@ -22,12 +23,15 @@ namespace technical.test.editor
 
             if (data)
             {
+
                 GUILayout.BeginHorizontal();
 
                 GUILayout.BeginVertical();
                 GUILayout.Label("Text");
                 for(int i = 0; i<data.Gizmos.Length; i++)
                 {
+                    if (indexEdit == i) GUI.backgroundColor = Color.red;
+                    else GUI.backgroundColor = Color.white;
                     data.Gizmos[i].Name = EditorGUILayout.TextField(data.Gizmos[i].Name, GUILayout.MinWidth(200));
                 }
                 GUILayout.EndVertical();
@@ -41,6 +45,8 @@ namespace technical.test.editor
                 GUILayout.EndHorizontal();
                 for (int i = 0; i < data.Gizmos.Length; i++)
                 {
+                    if (indexEdit == i) GUI.backgroundColor = Color.red;
+                    else GUI.backgroundColor = Color.white;
                     data.Gizmos[i].Position = EditorGUILayout.Vector3Field("", data.Gizmos[i].Position);
                 }
                 GUILayout.EndVertical();
@@ -50,13 +56,17 @@ namespace technical.test.editor
 
                 for (int i = 0; i < data.Gizmos.Length; i++)
                 {
+                    if (indexEdit == i) GUI.backgroundColor = Color.red;
+                    else GUI.backgroundColor = Color.white;
+
                     if (GUILayout.Button("Edit", GUILayout.MinWidth(75)))
                     {
-                        
+                        if (indexEdit == i) indexEdit = -1;
+                        else indexEdit = i;
                     }
                 }
+                GUI.backgroundColor = Color.white;
                 GUILayout.EndVertical();
-
                 GUILayout.EndHorizontal();
 
                 GUILayout.FlexibleSpace();
@@ -94,13 +104,23 @@ namespace technical.test.editor
             {
                 Handles.color = Color.white;
                 GUI.color = Color.black;
-                foreach (var g in data.Gizmos)
+                for (int i = 0; i < data.Gizmos.Length; i++)
                 {
                     Handles.color = Color.white;
-                    Handles.SphereHandleCap(0, g.Position, Quaternion.identity, 0.5f, EventType.Repaint);
+                    Handles.SphereHandleCap(0, data.Gizmos[i].Position, Quaternion.identity, 0.5f, EventType.Repaint);
                     Handles.color = Color.black;
-                    Handles.DrawLine(g.Position, g.Position + Vector3.up);
-                    Handles.Label(g.Position + Vector3.up * 1.25f, g.Name, EditorStyles.boldLabel);
+                    Handles.DrawLine(data.Gizmos[i].Position, data.Gizmos[i].Position + Vector3.up);
+                    Handles.Label(data.Gizmos[i].Position + Vector3.up * 1.25f, data.Gizmos[i].Name, EditorStyles.boldLabel);
+
+                    if (indexEdit == i)
+                    {
+                        EditorGUI.BeginChangeCheck();
+                        Vector3 newTargetPosition = Handles.PositionHandle(data.Gizmos[i].Position, Quaternion.identity);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            data.Gizmos[i].Position = newTargetPosition;
+                        }
+                    }
                 }
             }
         }
