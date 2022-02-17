@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+/********************************
+ * File: GizmoEditor.cs
+ * By: Oscar Trosseau
+ * 
+ * A Gizmo Editor Window, allowing use to quickly 
+ * visualize and edit gizmo, marking important points in a level.
+ ********************************/
 
 namespace technical.test.editor
 {
@@ -98,7 +105,6 @@ namespace technical.test.editor
                     backupData = null;
                     indexEdit = -1;
                 }
-
             }
             else    //Else if no data have been provided, we ask for some
             {
