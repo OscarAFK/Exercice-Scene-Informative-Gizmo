@@ -17,6 +17,18 @@ namespace technical.test.editor
         {
             return "Gizmo count : " + _gizmos.Length;
         }
+
+        public void RemoveGizmoAt(int index)
+        {
+            if (index == 0) return;
+            Gizmo[] temp = new Gizmo[_gizmos.Length - 1];
+            for(int i = 0; i<_gizmos.Length; i++)
+            {
+                if (i == index) continue;
+                temp[i] = _gizmos[i];
+            }
+            _gizmos = temp;
+        }
     }
 
     [CustomEditor(typeof(SceneGizmoAsset))]
@@ -39,7 +51,7 @@ namespace technical.test.editor
             if (GUILayout.Button("Open Gizmo Editor"))
             {
                 GizmoEditor.ShowWindow();
-                GizmoEditor.data = sceneGizmoAsset;
+                GizmoEditor.Data = sceneGizmoAsset;
             }
         }
     }
