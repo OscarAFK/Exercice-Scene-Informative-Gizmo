@@ -7,13 +7,12 @@ namespace technical.test.editor
 {
     public class GizmoEditor : EditorWindow
     {
+        private static SceneGizmoAsset data;                //The scene SceneGizmoAsset data we want to display and edit
+        private static SceneGizmoAsset backupData;          //A backup of this data, used in the context menu "Reset Position"
+        private static int indexEdit = -1;                  //The index of the currently edited gizmos
+        private static float gizmoSphereRadius = .5f;       //The sphere radius of the displayed gizmo
 
-        private static SceneGizmoAsset data;
-        private static SceneGizmoAsset backupData;
-        private static int indexEdit = -1;
-        private static float gizmoSphereRadius = .5f;
-
-        public static SceneGizmoAsset Data
+        public static SceneGizmoAsset Data                  //A setter for the data, allowing us to automatically update the backup data.
         {
             set
             {
@@ -32,7 +31,7 @@ namespace technical.test.editor
         {
             GUILayout.Label("Gizmo Editor", EditorStyles.boldLabel);
 
-            if (data)
+            if (data)       //If data have been provided
             {
 
                 //This code is a bit ugly, and some parts are redundant. It could have been refactored to take only a few lines
@@ -45,7 +44,7 @@ namespace technical.test.editor
                 GUILayout.Label("Text");
                 for(int i = 0; i<data.Gizmos.Length; i++)
                 {
-                    if (indexEdit == i) GUI.backgroundColor = Color.red;
+                    if (indexEdit == i) GUI.backgroundColor = Color.red;        //If the current gizmo is selected, we color his interface in red
                     else GUI.backgroundColor = Color.white;
                     Undo.RecordObject(data, "Changed Name Of Gizmo");
                     data.Gizmos[i].Name = EditorGUILayout.TextField(data.Gizmos[i].Name, GUILayout.MinWidth(200));
@@ -101,38 +100,33 @@ namespace technical.test.editor
                 }
 
             }
-            else
+            else    //Else if no data have been provided, we ask for some
             {
                 Data = EditorGUILayout.ObjectField("Scene Gizmo Asset: ", data, typeof(SceneGizmoAsset), true) as SceneGizmoAsset;
             }
         }
 
-        // Window has been selected
-        void OnFocus()
+        private void OnEnable()
         {
-            SceneView.duringSceneGui += this.OnSceneGUI;
+            SceneView.duringSceneGui += this.OnSceneGUI;        //We tell unity to read our "OnSceneGUI" function when it is drawing on the scene
         }
 
-        private void OnLostFocus()
+        private void OnDestroy()
         {
-            SceneView.duringSceneGui -= this.OnSceneGUI;
-        }
-
-        void OnDestroy()
-        {
-            indexEdit = -1;
-            SceneView.duringSceneGui -= this.OnSceneGUI;
+            indexEdit = -1;                                     //We reset the index edit
+            SceneView.duringSceneGui -= this.OnSceneGUI;        //We tell unity to stop reading our "OnSceneGUI" function when it is drawing on the scene
         }
 
         void OnSceneGUI(SceneView sceneView)
         {
             if (data)
             {
-                Ray ray = new Ray();
+                Ray ray = new Ray();    //These two lines will be used to check if we are right clicking on a gizmo. They are done here to avoid useless repetition
                 if(Event.current.type == EventType.MouseDown) ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+
                 Handles.color = Color.white;
                 GUI.color = Color.black;
-                for (int i = 0; i < data.Gizmos.Length; i++)
+                for (int i = 0; i < data.Gizmos.Length; i++)        //We go through all the gizmos
                 {
                     Handles.color = Color.white;
                     Handles.SphereHandleCap(i, data.Gizmos[i].Position, Quaternion.identity, gizmoSphereRadius, EventType.Repaint);               //We draw the sphere
@@ -140,10 +134,10 @@ namespace technical.test.editor
                     Handles.DrawLine(data.Gizmos[i].Position, data.Gizmos[i].Position + Vector3.up);                                 //We draw a line between the sphere and the label
                     Handles.Label(data.Gizmos[i].Position + Vector3.up * 1.25f, data.Gizmos[i].Name, EditorStyles.boldLabel);         //We draw the label
 
-                    if (indexEdit == i)
+                    if (indexEdit == i)     //If the current gizmo is selected for editing
                     {
                         EditorGUI.BeginChangeCheck();
-                        Vector3 newTargetPosition = Handles.PositionHandle(data.Gizmos[i].Position, Quaternion.identity);
+                        Vector3 newTargetPosition = Handles.PositionHandle(data.Gizmos[i].Position, Quaternion.identity);       //We draw an handle
                         if (EditorGUI.EndChangeCheck())
                         {
                             Undo.RecordObject(data, "Changed Position Of Gizmo");
@@ -151,12 +145,12 @@ namespace technical.test.editor
                         }
                     }
                     
-                    if (Event.current.type == EventType.MouseDown)
+                    if (Event.current.type == EventType.MouseDown)      //If the user right clicked
                     {
                         Bounds bound = new Bounds(data.Gizmos[i].Position, Vector3.one * gizmoSphereRadius);
-                        if (bound.IntersectRay(ray))
+                        if (bound.IntersectRay(ray))        //If he right clicked on the current gizmo
                         {
-                            GenericMenu menu = new GenericMenu();
+                            GenericMenu menu = new GenericMenu();       //A context menu will appear
                             menu.AddItem(new GUIContent("Reset Position"), false, RestPosition, i);
                             menu.AddItem(new GUIContent("Delete Gizmo"), false, DeleteGizmo, i);
                             menu.ShowAsContext();

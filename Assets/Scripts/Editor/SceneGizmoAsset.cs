@@ -32,7 +32,7 @@ namespace technical.test.editor
     }
 
     [CustomEditor(typeof(SceneGizmoAsset))]
-    public class SceneGizmoEditorUI : Editor
+    public class SceneGizmoEditorUI : Editor        //This class allow us to personalize the SceneGizmoAsset in Inspector, and notably to add a button to open the editor window
     {
         private SceneGizmoAsset sceneGizmoAsset;
 
